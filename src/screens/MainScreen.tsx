@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Animated, View } from "react-native";
 
+import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import Button from "../components/Button";
 import Container from "../components/Container";
@@ -33,6 +34,9 @@ const MainScreen = ({ navigation }) => {
                     </AnimatedView>
                     <AnimatedView slideLeft={true} started={count === 3} style={{ marginTop: Spacing.huge }}>
                         <NextButton navigation={navigation} />
+                    </AnimatedView>
+                    <AnimatedView slideLeft={true} started={count === 4} style={{ marginTop: Spacing.normal }}>
+                        <MoreButton navigation={navigation} />
                     </AnimatedView>
                 </Content>
             </Container>
@@ -102,6 +106,21 @@ const NextButton = ({ navigation }) => {
         navigation.navigate("Giveaway");
     }, [navigation]);
     return <Button title={"Yes. I'd like that."} onPress={onPress} />;
+};
+
+const MoreButton = ({ navigation }) => {
+    const onPress = useCallback(() => {
+        Linking.openURL("https://levx.app");
+    }, [navigation]);
+    return (
+        <Button
+            type={"clear"}
+            size={"small"}
+            title={"What is LevX?"}
+            titleStyle={{ textDecorationLine: "underline" }}
+            onPress={onPress}
+        />
+    );
 };
 
 const useIncrementer = (delay = 700, maxCount = 5) => {
