@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useState } from "react";
 import { Image, View } from "react-native";
 
 import * as AuthSession from "expo-auth-session";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import Button from "../components/Button";
 import Content from "../components/Content";
@@ -9,6 +10,7 @@ import Footer from "../components/Footer";
 import Text from "../components/Text";
 import { Spacing } from "../constants/dimension";
 import { Context } from "../context";
+import useColors from "../hooks/useColors";
 import useTwitter from "../hooks/useTwitter";
 
 const AuthScreen = ({ navigation }) => {
@@ -38,6 +40,7 @@ const AuthScreen = ({ navigation }) => {
 };
 
 const SignInButton = ({ navigation, onError }) => {
+    const { twitter: twitterColor } = useColors();
     const [loading, setLoading] = useState(false);
     const { twitter } = useTwitter();
     const { setTwitterAuth } = useContext(Context);
@@ -58,7 +61,7 @@ const SignInButton = ({ navigation, onError }) => {
             title={"Sign in with Twitter"}
             icon={{ type: "material-community", name: "twitter", color: "white", size: 24 }}
             iconRight={true}
-            color={"#1da1f2"}
+            color={twitterColor}
             loading={loading}
             onPress={onPress}
         />
@@ -66,7 +69,7 @@ const SignInButton = ({ navigation, onError }) => {
 };
 
 const signIn = async twitter => {
-    const redirectUrl = AuthSession.makeRedirectUri() + "/redirect";
+    const redirectUrl = AuthSession.makeRedirectUri() + (Constants.appOwnership === "standalone" ? "/redirect" : "");
     const requestTokens = await twitter.getRequestToken(redirectUrl);
     if (requestTokens.oauth_callback_confirmed === "true") {
         const authResponse = await AuthSession.startAsync({

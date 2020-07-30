@@ -13,7 +13,7 @@ export interface ButtonProps extends NativeButtonProps {
 const Button: FC<ButtonProps> = props => {
     const { primary, shadow } = useColors();
     const type = props.type || "solid";
-    const height = props.size === "small" ? 56 : 64;
+    const height = props.size === "small" ? 48 : 64;
     const fontSize = props.size === "small" ? 18 : 20;
     return (
         <NativeButton
@@ -29,15 +29,17 @@ const Button: FC<ButtonProps> = props => {
             ]}
             titleStyle={[{ fontSize }, props.titleStyle]}
             containerStyle={[
-                {
-                    borderRadius: Spacing.tiny,
-                    elevation: Spacing.small,
-                    shadowColor: shadow,
-                    shadowOffset: { width: 0, height: Spacing.tiny },
-                    shadowOpacity: 0.5,
-                    shadowRadius: Spacing.tiny,
-                    overflow: "visible"
-                },
+                props.type === "clear"
+                    ? {}
+                    : {
+                          borderRadius: Spacing.tiny,
+                          elevation: Spacing.small,
+                          shadowColor: shadow,
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.5,
+                          shadowRadius: 4,
+                          overflow: "visible"
+                      },
                 props.containerStyle
             ]}
         />

@@ -4,7 +4,8 @@ export const Colors = {
         transparent: "#ffffff00",
         primary: "#291C64",
         secondary: "#9BECEE",
-        green: "#32CD32"
+        green: "#32CD32",
+        twitter: "#1da1f2"
     },
     light: {
         background: "#ffffff",

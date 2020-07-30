@@ -28,10 +28,6 @@
     "ios": {
       "bundleIdentifier": "app.levx",
       "buildNumber": "1"
-    },
-    "extra": {
-      "twitterConsumerKey": "",
-      "twitterConsumerSecret": ""
     }
   }
 }

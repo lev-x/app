@@ -83,7 +83,13 @@ const AppContainer = ({ twitterAuth }) => {
             <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={twitterAuth ? "Main" : "Auth"}>
                 <Stack.Screen name={"Auth"} component={AuthScreen} />
                 <Stack.Screen name={"Main"} component={MainScreen} />
-                <Stack.Screen name={"Giveaway"} component={GiveawayScreen} />
+                <Stack.Screen
+                    name={"Giveaway"}
+                    component={GiveawayScreen}
+                    options={{
+                        stackPresentation: "modal"
+                    }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
