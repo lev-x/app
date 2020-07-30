@@ -21,6 +21,7 @@
     "expo-permissions": "~9.0.1",
     "expo-splash-screen": "^0.3.1",
     "expo-status-bar": "^1.0.0",
+    "expo-updates": "~0.2.8",
     "node-libs-browser": "^2.2.1",
     "react": "16.11.0",
     "react-dom": "16.11.0",
