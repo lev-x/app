@@ -9,6 +9,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
+    "primaryColor": "#291C64",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -30,6 +31,11 @@
     "ios": {
       "bundleIdentifier": "app.levx",
       "buildNumber": "1"
+    },
+    "notification": {
+      "icon": "./assets/icon-dark.png",
+      "color": "#ffffff",
+      "iosDisplayInForeground": true
     }
   }
 }
