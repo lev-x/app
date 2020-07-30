@@ -1,26 +1,25 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, InteractionManager, Platform, StatusBar, View } from "react-native";
-import { Card, Icon, Input, Overlay, SocialIcon } from "react-native-elements";
+import { Alert, Image, InteractionManager, Platform, StatusBar, View } from "react-native";
+import { Card, Icon, SocialIcon } from "react-native-elements";
 
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 import { AndroidImportance } from "expo-notifications";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
-import useAsyncEffect from "use-async-effect";
 import Button from "../components/Button";
+import CloseButton from "../components/CloseButton";
 import Container from "../components/Container";
 import Content from "../components/Content";
 import FlexView from "../components/FlexView";
 import Footer from "../components/Footer";
+import TagModal from "../components/TagModal";
 import Text from "../components/Text";
-import { SCREEN_WIDTH, Spacing } from "../constants/dimension";
+import { Spacing } from "../constants/dimension";
+import { LEVX_TWITTER_ID } from "../constants/social";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
 import useTwitter from "../hooks/useTwitter";
-
-const LEVX_TWITTER_ID = "1187725084066103298";
-const REPLY_MESSAGE = "$333 DAI giveaway. Enter now!";
 
 const GiveawayScreen = ({ navigation }) => {
     return (
@@ -54,7 +53,7 @@ const Cover = () => (
                 <View style={{ marginTop: Spacing.huge, alignItems: "flex-end" }}>
                     <TitleText>$333 DAI{"\n"}Giveaway</TitleText>
                     <Text fontWeight={"light"} style={{ color: "white", marginTop: Spacing.tiny }}>
-                        Picked at 7th August 00:00 UTC
+                        Closed at 7th August 00:00 UTC
                     </Text>
                 </View>
             </Content>
@@ -63,7 +62,6 @@ const Cover = () => (
 );
 
 const Header = ({ navigation }) => {
-    const { disabled } = useColors();
     const onPress = useCallback(() => navigation.goBack(), [navigation]);
     return (
         <FlexView
@@ -74,17 +72,7 @@ const Header = ({ navigation }) => {
                 justifyContent: "flex-start",
                 alignItems: "center"
             }}>
-            <Icon
-                type={"ionicon"}
-                name={"md-close"}
-                color={"transparent"}
-                size={32}
-                reverse={true}
-                raised={true}
-                reverseColor={disabled}
-                onPress={onPress}
-                containerStyle={{ elevation: 0 }}
-            />
+            <CloseButton onPress={onPress} />
         </FlexView>
     );
 };
@@ -135,12 +123,15 @@ const Prize = ({ color, rank, amount }) => (
 
 const Rules = () => {
     const { twitterAuth, pushToken, setPushToken } = useContext(Context);
-    const { twitter } = useTwitter();
+    const { twitter, follow, isFollowing, retweet, hasRetweeted } = useTwitter();
     const turnOnPush = useCallback(async () => {
         const token = await registerForPushNotifications();
         await sendDMWithPushToken(twitter, twitterAuth, token.data);
         await setPushToken(token);
-        Alert.alert("Push Notifications", "Push notifications turned on!");
+        Alert.alert(
+            "Push Notifications",
+            "Push notifications turned on! Stay tuned for the announcement on 7th August."
+        );
         return true;
     }, [registerForPushNotifications, sendDMWithPushToken]);
     const isPushTurnedOn = useCallback(() => !!pushToken, [pushToken]);
@@ -150,8 +141,8 @@ const Rules = () => {
             <Text light={true} style={{ marginBottom: Spacing.small }}>
                 Complete these tasks by clicking each of them!
             </Text>
-            <Rule title={"Follow @LevxApp"} write={follow(twitter)} read={isFollowing(twitter, twitterAuth)} />
-            <Rule title={"Retweet the giveaway"} write={retweet(twitter)} read={hasRetweeted(twitter)} />
+            <Rule title={"Follow @LevxApp"} write={follow} read={isFollowing} />
+            <Rule title={"Retweet the giveaway"} write={retweet} read={hasRetweeted} />
             <TagRule />
             <Rule title={"Turn on push notifications"} write={turnOnPush} read={isPushTurnedOn} />
         </View>
@@ -214,8 +205,7 @@ const RuleButton = ({ title, loading, onPress, done }) => {
 };
 
 const TagRule = () => {
-    const { twitterAuth } = useContext(Context);
-    const { twitter } = useTwitter();
+    const { hasTaggedFriends } = useTwitter();
     const [modalOpen, setModalOpen] = useState(false);
     const [forceUpdate, setForceUpdate] = useState(false);
     const openModal = useCallback(() => setModalOpen(true), []);
@@ -226,155 +216,20 @@ const TagRule = () => {
     }, []);
     return (
         <>
-            <Rule
-                title={"Tag 3 friends"}
-                write={openModal}
-                read={hasTaggedFriends(twitter, twitterAuth?.user_id)}
-                forceUpdate={forceUpdate}
-            />
+            <Rule title={"Tag 3 friends"} write={openModal} read={hasTaggedFriends} forceUpdate={forceUpdate} />
             <TagModal visible={modalOpen} onDismiss={closeModal} onSuccess={onSuccess} />
         </>
-    );
-};
-
-const TagModal = ({ visible, onDismiss, onSuccess }) => {
-    const { twitter, getMe } = useTwitter();
-    const [me, setMe] = useState({} as any);
-    const [account0, setAccount0] = useState("" as string);
-    const [account1, setAccount1] = useState("" as string);
-    const [account2, setAccount2] = useState("" as string);
-    const accounts = [account0, account1, account2];
-    const disabled = !accounts.every(a => a.length > 0);
-    useAsyncEffect(async () => setMe(await getMe()), []);
-    return (
-        <Overlay
-            isVisible={visible}
-            onDismiss={onDismiss}
-            onBackdropPress={onDismiss}
-            statusBarTranslucent={true}
-            overlayStyle={{ width: SCREEN_WIDTH, backgroundColor: "transparent" }}>
-            <Card
-                title={"Tag 3 Friends"}
-                titleStyle={{ fontSize: 22 }}
-                containerStyle={{
-                    borderRadius: Spacing.small
-                }}>
-                <TagInput index={0} onComplete={setAccount0} />
-                <TagInput index={1} onComplete={setAccount1} />
-                <TagInput index={2} onComplete={setAccount2} />
-                <TagTweet me={me} accounts={[account0, account1, account2]} />
-                <Actions onCancel={onDismiss} onOk={tagFriends(twitter, me, accounts, onSuccess)} disabled={disabled} />
-            </Card>
-        </Overlay>
-    );
-};
-
-const TagInput = ({ index, onComplete }) => {
-    const { twitter } = useColors();
-    const [error, setError] = useState("");
-    const onChangeText = useCallback((text: string) => {
-        text = text.trim();
-        if (!text.match("^@?(\\w){1,15}$")) {
-            setError("Invalid account");
-        }
-        onComplete(text);
-    }, []);
-    return (
-        <Input
-            leftIcon={{ type: "material-community", name: "at", size: 18, color: twitter }}
-            labelStyle={{ fontSize: 13 }}
-            containerStyle={{ width: "100%" }}
-            inputContainerStyle={{ height: 28 }}
-            inputStyle={{ fontSize: 18, minHeight: 28, color: twitter }}
-            errorStyle={{ fontSize: 13 }}
-            onChangeText={onChangeText}
-            label={"Friend " + (index + 1)}
-            errorMessage={error}
-            autoCapitalize={"none"}
-            autoCompleteType={"off"}
-            autoFocus={index === 0}
-        />
-    );
-};
-
-const TagTweet = ({ accounts, me }) => {
-    const { primary, twitter: twitterColor } = useColors();
-    return (
-        <View>
-            <Text note={true} style={{ marginHorizontal: Spacing.small }}>
-                We'll tweet on behalf of you as such:
-            </Text>
-            <Card>
-                {me ? (
-                    <View>
-                        <TwitterBio me={me} />
-                        <FlexView style={{ marginVertical: Spacing.tiny }}>
-                            <Text note={true}>Replying to </Text>
-                            <Text note={true} style={{ color: twitterColor }}>
-                                @LevxApp
-                            </Text>
-                        </FlexView>
-                        <Text medium={true} style={{ fontSize: 15, marginVertical: Spacing.tiny }}>
-                            {REPLY_MESSAGE}
-                        </Text>
-                        {!accounts.every(account => !account) && (
-                            <Text style={{ color: twitterColor }}>{accounts.map(account => "@" + account + " ")}</Text>
-                        )}
-                    </View>
-                ) : (
-                    <ActivityIndicator color={primary} />
-                )}
-            </Card>
-        </View>
-    );
-};
-
-const TwitterBio = ({ me }) => {
-    return (
-        <FlexView>
-            <Image
-                source={{ uri: me.profile_image_url_https }}
-                style={{ width: 36, height: 36, borderRadius: 18, marginRight: Spacing.tiny }}
-            />
-            <View>
-                <Text fontWeight={"bold"} style={{ fontSize: 15 }}>
-                    {me.name}
-                </Text>
-                <Text light={true} style={{ fontSize: 15 }}>
-                    @{me.screen_name}
-                </Text>
-            </View>
-        </FlexView>
-    );
-};
-
-const Actions = ({ onCancel, onOk, disabled }) => {
-    const { primary, textLight } = useColors();
-    return (
-        <FlexView style={{ justifyContent: "flex-end", padding: Spacing.tiny }}>
-            <Button
-                size={"small"}
-                type={"clear"}
-                title={"Cancel"}
-                titleStyle={{ color: textLight }}
-                onPress={onCancel}
-            />
-            <Button
-                size={"small"}
-                type={"clear"}
-                title={"OK"}
-                titleStyle={{ color: primary }}
-                onPress={onOk}
-                disabled={disabled}
-            />
-        </FlexView>
     );
 };
 
 const FAQ = () => (
     <View style={{ marginTop: Spacing.normal }}>
         <CaptionText>FAQ</CaptionText>
-        <FAQCard question={"When to be announced?"} answer={"7th August"} />
+        <FAQCard
+            question={"Do I have to finish all 4 tasks?"}
+            answer={"Yes. It's the moment when you finished all tasks that you're signed up."}
+        />
+        <FAQCard question={"When is the deadline?"} answer={"7th August 00:00 UTC"} />
         <FAQCard question={"How can I get notified?"} answer={"A push notification will be sent to you on that day."} />
         <FAQCard
             question={"Is it okay to delete the app?"}
@@ -425,55 +280,6 @@ const Border = () => {
     return <View style={{ height: 0.5, width: "100%", backgroundColor: border }} />;
 };
 
-const getGiveawayTweetId = async twitter => {
-    const user = await twitter.get("users/show", {
-        user_id: LEVX_TWITTER_ID
-    });
-    return user.location;
-};
-const getDownloadURL = async twitter => {
-    const user = await twitter.get("users/show", {
-        user_id: LEVX_TWITTER_ID
-    });
-    return user.url;
-};
-const getTimeline = async (twitter, userId) => {
-    return await twitter.get("statuses/user_timeline", {
-        user_id: userId,
-        count: 200
-    });
-};
-
-const follow = twitter => async () => {
-    await twitter.post("friendships/create", {
-        user_id: LEVX_TWITTER_ID,
-        follow: "true"
-    });
-    Alert.alert("Follow", "You're following @LevxApp!");
-    return true;
-};
-const isFollowing = (twitter, twitterAuth) => async () => {
-    const response = await twitter.get("friendships/show", {
-        source_id: twitterAuth?.user_id,
-        target_id: LEVX_TWITTER_ID
-    });
-    return response?.relationship?.source?.following || false;
-};
-const retweet = twitter => async () => {
-    const tweetId = await getGiveawayTweetId(twitter);
-    await twitter.post("statuses/retweet/" + tweetId, {});
-    Alert.alert("Retweet", "You retweeted successfully!");
-    return true;
-};
-const hasRetweeted = twitter => async () => {
-    const tweetId = await getGiveawayTweetId(twitter);
-    const response = await twitter.get("statuses/show", {
-        id: tweetId,
-        include_my_retweet: "true"
-    });
-    return !!response?.current_user_retweet;
-};
-
 const registerForPushNotifications = async () => {
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -509,43 +315,6 @@ const sendDMWithPushToken = async (twitter, twitterAuth, token) => {
             }
         }
     });
-};
-const hasTaggedFriends = (twitter, userId) => async () => {
-    const tweetId = await getGiveawayTweetId(twitter);
-    const timeline = await getTimeline(twitter, userId);
-    for (const tweet of timeline) {
-        if (tweet.in_reply_to_status_id_str === tweetId) {
-            return true;
-        }
-    }
-    return false;
-};
-const tagFriends = (twitter, me, accounts, onSuccess) => async () => {
-    if (!accounts.every(a => a.length > 0)) {
-        Alert.alert("Tag 3 friends", "Fill in 3 accounts");
-    } else if (
-        accounts[0].toLowerCase() === accounts[1].toLowerCase() ||
-        accounts[1].toLowerCase() === accounts[2].toLowerCase() ||
-        accounts[0].toLowerCase() === accounts[2].toLowerCase()
-    ) {
-        Alert.alert("Tag 3 friends", "Duplicate accounts not allowed");
-    } else if (!accounts.every(a => a.toLowerCase() !== me.screen_name.toLowerCase())) {
-        Alert.alert("Tag 3 friends", "You can't tag yourself");
-    } else if (!accounts.every(a => a.toLowerCase() !== "LevxApp".toLowerCase())) {
-        Alert.alert("Tag 3 friends", "You can't tag @LevxApp");
-    } else {
-        const tweetId = await getGiveawayTweetId(twitter);
-        const downloadURL = await getDownloadURL(twitter);
-        const status =
-            REPLY_MESSAGE + "\n" + accounts.map(account => "@" + account + " ").join("") + "\n\n" + downloadURL;
-        await twitter.post("statuses/update", {
-            status,
-            in_reply_to_status_id: tweetId,
-            auto_populate_reply_metadata: "true"
-        });
-        onSuccess?.();
-        setTimeout(() => Alert.alert("Tag 3 friends", "You tagged 3 friends successfully!"), 500);
-    }
 };
 
 export default GiveawayScreen;

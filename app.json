@@ -24,7 +24,8 @@
     "android": {
       "package": "app.levx",
       "versionCode": 1,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": []
     },
     "ios": {
       "bundleIdentifier": "app.levx",
