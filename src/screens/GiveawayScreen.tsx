@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, Image, InteractionManager, Platform, StatusBar, View } from "react-native";
 import { Card, Icon, SocialIcon } from "react-native-elements";
 
-import AsyncStorage from "@react-native-community/async-storage";
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 import { AndroidImportance } from "expo-notifications";
@@ -23,29 +22,31 @@ const LEVX_TWITTER_ID = "1187725084066103298";
 
 const GiveawayScreen = ({ navigation }) => {
     return (
-        <Container
-            scrollToBottomLength={440}
-            showScrollToBottomButton={true}
-            style={{ backgroundColor: "transparent" }}>
-            <StatusBar translucent={true} barStyle={"light-content"} backgroundColor={"transparent"} animated={true} />
-            <View>
-                <Cover navigation={navigation} />
-                <Content>
-                    <Prizes />
-                    <Rules />
-                    <FAQ />
-                    <Social />
-                    <Footer alignCenter={true} />
-                </Content>
-            </View>
-        </Container>
+        <View>
+            <StatusBar translucent={true} barStyle={"light-content"} backgroundColor={"transparent"} />
+            <Container
+                scrollToBottomLength={440}
+                showScrollToBottomButton={true}
+                style={{ backgroundColor: "transparent" }}>
+                <View>
+                    <Cover />
+                    <Content>
+                        <Prizes />
+                        <Rules />
+                        <FAQ />
+                        <Social />
+                        <Footer alignCenter={true} />
+                    </Content>
+                </View>
+            </Container>
+            <Header navigation={navigation} />
+        </View>
     );
 };
 
-const Cover = ({ navigation }) => (
+const Cover = () => (
     <View style={{ width: "100%", height: 440 }}>
         <CoverImage />
-        <Header navigation={navigation} />
         <View style={{ position: "absolute", width: "100%", bottom: 0 }}>
             <Content style={{ backgroundColor: "transparent" }}>
                 <View style={{ marginTop: Spacing.huge, alignItems: "flex-end" }}>
@@ -60,12 +61,13 @@ const Cover = ({ navigation }) => (
 );
 
 const Header = ({ navigation }) => {
+    const { disabled } = useColors();
     const onPress = useCallback(() => navigation.goBack(), [navigation]);
     return (
         <FlexView
             style={{
                 position: "absolute",
-                top: StatusBar.currentHeight,
+                top: Constants.statusBarHeight,
                 height: 64,
                 justifyContent: "flex-start",
                 alignItems: "center"
@@ -77,6 +79,7 @@ const Header = ({ navigation }) => {
                 size={32}
                 reverse={true}
                 raised={true}
+                reverseColor={disabled}
                 onPress={onPress}
                 containerStyle={{ elevation: 0 }}
             />
@@ -129,8 +132,12 @@ const Prize = ({ color, rank, amount }) => (
 );
 
 const Rules = () => {
-    const { twitterAuth } = useContext(Context);
+    const { twitterAuth, pushToken, setPushToken } = useContext(Context);
     const { twitter } = useTwitter();
+    const turnOnPush = useCallback(async () => {
+        await setPushToken(await registerForPushNotifications());
+    }, [registerForPushNotifications]);
+    const isPushTurnedOn = useCallback(() => !!pushToken, [pushToken]);
     return (
         <View style={{ marginTop: Spacing.normal }}>
             <CaptionText>RULES</CaptionText>
@@ -139,11 +146,7 @@ const Rules = () => {
             </Text>
             <Rule title={"Follow @LevxApp twitter"} write={follow(twitter)} read={isFollowing(twitter, twitterAuth)} />
             <Rule title={"Retweet the giveaway tweet"} write={retweet(twitter)} read={hasRetweeted(twitter)} />
-            <Rule
-                title={"Turn on push notifications"}
-                write={registerForPushNotifications}
-                read={pushNotificationsRegistered}
-            />
+            <Rule title={"Turn on push notifications"} write={turnOnPush} read={isPushTurnedOn} />
         </View>
     );
 };
@@ -290,10 +293,6 @@ const hasRetweeted = twitter => async () => {
     return !!response?.current_user_retweet;
 };
 
-const pushNotificationsRegistered = async () => {
-    return !!(await AsyncStorage.getItem("push_token"));
-};
-
 const registerForPushNotifications = async () => {
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -306,7 +305,6 @@ const registerForPushNotifications = async () => {
             throw new Error("Failed to get push token for push notification!");
         }
         const token = await Notifications.getExpoPushTokenAsync();
-        await AsyncStorage.setItem("push_token", JSON.stringify(token));
         if (Platform.OS === "android") {
             await Notifications.setNotificationChannelAsync("default", {
                 name: "default",

@@ -7,7 +7,6 @@ import { enableScreens } from "react-native-screens";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
 
 import { Roboto_300Light, Roboto_400Regular, Roboto_500Medium, useFonts } from "@expo-google-fonts/roboto";
-import AsyncStorage from "@react-native-community/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import useAsyncEffect from "use-async-effect";
@@ -39,11 +38,10 @@ const AppLoader = () => {
         Roboto_400Regular,
         Roboto_500Medium
     });
-    const { twitterAuth, setTwitterAuth } = useContext(Context);
+    const { load, twitterAuth } = useContext(Context);
     const { primary } = useColors();
     useAsyncEffect(async () => {
-        const auth = await AsyncStorage.getItem("twitter_auth");
-        setTwitterAuth(auth ? JSON.parse(auth) : null);
+        await load();
         setLoading(false);
     }, []);
     useAsyncEffect(() => {

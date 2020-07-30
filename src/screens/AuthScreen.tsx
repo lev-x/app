@@ -1,11 +1,9 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Image, View } from "react-native";
-import { Button } from "react-native-elements";
 
-import AsyncStorage from "@react-native-community/async-storage";
 import * as AuthSession from "expo-auth-session";
-import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
+import Button from "../components/Button";
 import Content from "../components/Content";
 import Footer from "../components/Footer";
 import Text from "../components/Text";
@@ -47,7 +45,7 @@ const SignInButton = ({ navigation, onError }) => {
         onError("");
         setLoading(true);
         try {
-            setTwitterAuth(await signIn(twitter));
+            await setTwitterAuth(await signIn(twitter));
             navigation.replace("Main");
         } catch (e) {
             onError(e);
@@ -55,25 +53,20 @@ const SignInButton = ({ navigation, onError }) => {
             setLoading(false);
         }
     }, [twitter]);
-    const justifyContent = loading ? "center" : "space-between";
     return (
         <Button
-            buttonStyle={{ justifyContent, paddingHorizontal: Spacing.small, height: 64 }}
-            type={"clear"}
+            title={"Sign in with Twitter"}
             icon={{ type: "material-community", name: "twitter", color: "white", size: 24 }}
             iconRight={true}
-            title={"Sign in with Twitter"}
-            containerStyle={{ backgroundColor: "#1da1f2", elevation: Spacing.small }}
-            titleStyle={{ color: "white", fontSize: 20 }}
+            color={"#1da1f2"}
             loading={loading}
-            loadingProps={{ size: "large", color: "white" }}
             onPress={onPress}
         />
     );
 };
 
 const signIn = async twitter => {
-    const redirectUrl = AuthSession.makeRedirectUri({ useProxy: Constants.appOwnership === "standalone" });
+    const redirectUrl = AuthSession.makeRedirectUri() + "/redirect";
     const requestTokens = await twitter.getRequestToken(redirectUrl);
     if (requestTokens.oauth_callback_confirmed === "true") {
         const authResponse = await AuthSession.startAsync({
@@ -81,12 +74,10 @@ const signIn = async twitter => {
             returnUrl: redirectUrl
         });
         if (authResponse.type === "success") {
-            const auth = await twitter.getAccessToken({
+            return await twitter.getAccessToken({
                 oauth_token: requestTokens.oauth_token,
                 oauth_verifier: authResponse.params.oauth_verifier
             });
-            await AsyncStorage.setItem("twitter_auth", JSON.stringify(auth));
-            return auth;
         } else {
             throw new Error("AuthSession.type is " + authResponse.type);
         }

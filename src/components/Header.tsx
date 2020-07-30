@@ -9,7 +9,7 @@ import { Context } from "../context";
 import useColors from "../hooks/useColors";
 
 const Header = ({ navigation }) => {
-    const { background } = useColors();
+    const { background, shadow } = useColors();
     return (
         <View
             style={{
@@ -19,7 +19,12 @@ const Header = ({ navigation }) => {
                 marginTop: Constants.statusBarHeight,
                 paddingHorizontal: Spacing.content,
                 elevation: Spacing.normal,
-                backgroundColor: background
+                shadowColor: shadow,
+                shadowOffset: { width: Spacing.small, height: Spacing.small },
+                shadowOpacity: 0.2,
+                shadowRadius: Spacing.small,
+                backgroundColor: background,
+                zIndex: 100
             }}>
             <Image source={require("../../assets/logo-typography.png")} style={{ width: 102, height: 17.7 }} />
             <OverflowButton navigation={navigation} />
@@ -55,11 +60,11 @@ const OverflowButton = ({ navigation }) => {
 };
 
 const SignOutItem = ({ navigation }) => {
-    const { setTwitterAuth } = useContext(Context);
-    const onSignOut = useCallback(() => {
-        setTwitterAuth(null);
+    const { clear } = useContext(Context);
+    const onSignOut = useCallback(async () => {
+        await clear();
         navigation.replace("Auth");
-    }, []);
+    }, [navigation]);
     return (
         <MenuItem textStyle={{ fontSize: 18 }} onPress={onSignOut}>
             Sign Out

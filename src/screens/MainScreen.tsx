@@ -11,11 +11,12 @@ import Text from "../components/Text";
 import { SCREEN_WIDTH, Spacing } from "../constants/dimension";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
+import LoadingScreen from "./LoadingScreen";
 
 const MainScreen = ({ navigation }) => {
     const { twitterAuth } = useContext(Context);
     const { count } = useIncrementer();
-    return (
+    return twitterAuth ? (
         <View>
             <StatusBar translucent={true} />
             <Header navigation={navigation} />
@@ -36,6 +37,8 @@ const MainScreen = ({ navigation }) => {
                 </Content>
             </Container>
         </View>
+    ) : (
+        <LoadingScreen />
     );
 };
 
@@ -86,7 +89,7 @@ const Highlighter = () => {
                 backgroundColor: secondary,
                 position: "absolute",
                 width: "100%",
-                top: 20,
+                height: 12,
                 bottom: 8,
                 zIndex: 0
             }}
