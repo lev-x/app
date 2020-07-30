@@ -11,7 +11,7 @@ export interface ButtonProps extends NativeButtonProps {
 
 // tslint:disable-next-line:max-func-body-length
 const Button: FC<ButtonProps> = props => {
-    const { primary, shadow } = useColors();
+    const { primary, shadow, border } = useColors();
     const type = props.type || "solid";
     const height = props.size === "small" ? 48 : 64;
     const fontSize = props.size === "small" ? 18 : 20;
@@ -23,7 +23,8 @@ const Button: FC<ButtonProps> = props => {
                 {
                     height,
                     paddingHorizontal: Spacing.small,
-                    backgroundColor: type === "solid" ? props.color || primary : "white"
+                    backgroundColor: type === "solid" ? props.color || primary : "white",
+                    borderColor: border
                 },
                 props.buttonStyle
             ]}

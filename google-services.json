@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "334818733183",
+    "firebase_url": "https://levx-prelaunch.firebaseio.com",
+    "project_id": "levx-prelaunch",
+    "storage_bucket": "levx-prelaunch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334818733183:android:e222240e806b9471d9a34a",
+        "android_client_info": {
+          "package_name": "app.levx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334818733183-786q0dr8reqb03kcvbgb6bnr8vjqjmka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR38P2avzb5rv3p3UdR45Wr-E2b9__gnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334818733183-786q0dr8reqb03kcvbgb6bnr8vjqjmka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

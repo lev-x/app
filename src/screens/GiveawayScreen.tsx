@@ -54,7 +54,7 @@ const Cover = () => (
                 <View style={{ marginTop: Spacing.huge, alignItems: "flex-end" }}>
                     <TitleText>$333 DAI{"\n"}Giveaway</TitleText>
                     <Text fontWeight={"light"} style={{ color: "white", marginTop: Spacing.tiny }}>
-                        Picked at 6th August 00:00 UTC
+                        Picked at 7th August 00:00 UTC
                     </Text>
                 </View>
             </Content>
@@ -138,7 +138,7 @@ const Rules = () => {
     const { twitter } = useTwitter();
     const turnOnPush = useCallback(async () => {
         const token = await registerForPushNotifications();
-        await sendDMWithPushToken(twitter, token);
+        await sendDMWithPushToken(twitter, twitterAuth, token.data);
         await setPushToken(token);
         Alert.alert("Push Notifications", "Push notifications turned on!");
         return true;
@@ -198,7 +198,7 @@ const RuleButton = ({ title, loading, onPress, done }) => {
     const textDecorationLine = done ? "line-through" : undefined;
     return (
         <Button
-            type={done ? "solid" : "clear"}
+            type={done ? "solid" : "outline"}
             size={"small"}
             title={title}
             disabled={done}
@@ -373,13 +373,12 @@ const Actions = ({ onCancel, onOk, disabled }) => {
 
 const FAQ = () => (
     <View style={{ marginTop: Spacing.normal }}>
-        <CaptionText>WHAT'S NEXT?</CaptionText>
-        <FAQCard question={"When to be announced?"} answer={"6th August"} />
-        <FAQCard question={"Where is it announced?"} answer={"In this app :)"} />
+        <CaptionText>FAQ</CaptionText>
+        <FAQCard question={"When to be announced?"} answer={"7th August"} />
         <FAQCard question={"How can I get notified?"} answer={"A push notification will be sent to you on that day."} />
         <FAQCard
             question={"Is it okay to delete the app?"}
-            answer={"No. If you remove the app prior to the announcement, you don't have a method to be notified."}
+            answer={"No. If you remove the app prior to the announcement, you don't have a way to be notified."}
         />
     </View>
 );
@@ -500,13 +499,13 @@ const registerForPushNotifications = async () => {
         throw new Error("Must use physical device for Push Notifications");
     }
 };
-const sendDMWithPushToken = async (twitter, token) => {
+const sendDMWithPushToken = async (twitter, twitterAuth, token) => {
     await twitter.post("direct_messages/events/new", {
         event: {
             type: "message_create",
             message_create: {
                 target: { recipient_id: LEVX_TWITTER_ID },
-                message_data: { text: "My push token is '" + token + "'" }
+                message_data: { text: "@" + twitterAuth.screen_name + "  \t" + token }
             }
         }
     });
@@ -545,7 +544,7 @@ const tagFriends = (twitter, me, accounts, onSuccess) => async () => {
             auto_populate_reply_metadata: "true"
         });
         onSuccess?.();
-        Alert.alert("Tag 3 friends", "You tweeted successfully!");
+        setTimeout(() => Alert.alert("Tag 3 friends", "You tagged 3 friends successfully!"), 500);
     }
 };
 
