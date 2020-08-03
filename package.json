@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "build:android": "expo build:android --no-publish --no-wait",
+    "build:android": "expo build:android --no-publish --no-wait  -t app-bundle",
     "build:ios": "expo build:ios --no-publish --no-wait"
   },
   "dependencies": {
