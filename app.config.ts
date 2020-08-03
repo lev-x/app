@@ -3,15 +3,14 @@ import "dotenv/config";
 export default ({ config }) => {
     return {
         ...config,
+        version: "1.0.0",
         android: {
             ...config.android,
-            version: "1.0.0",
-            versionCode: 3
+            versionCode: 4
         },
         ios: {
             ...config.ios,
-            version: "1.0.0",
-            buildNumber: "3"
+            buildNumber: "4"
         },
         extra: {
             twitterConsumerKey: process.env.TWITTER_CONSUMER_KEY,

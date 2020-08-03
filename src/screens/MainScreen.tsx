@@ -12,11 +12,13 @@ import Text from "../components/Text";
 import { SCREEN_WIDTH, Spacing } from "../constants/dimension";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
+import useUpdateChecker from "../hooks/useUpdateChecker";
 import LoadingScreen from "./LoadingScreen";
 
 const MainScreen = ({ navigation }) => {
     const { twitterAuth } = useContext(Context);
     const { count } = useIncrementer();
+    useUpdateChecker();
     return twitterAuth ? (
         <View>
             <StatusBar translucent={true} />

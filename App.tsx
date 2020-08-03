@@ -1,8 +1,7 @@
 // tslint:disable-next-line:ordered-imports
 import "./global";
 // tslint:disable-next-line:ordered-imports
-import React, { useContext, useEffect, useState } from "react";
-import { Alert, AppState } from "react-native";
+import React, { useContext, useState } from "react";
 import { ThemeProvider } from "react-native-elements";
 import { enableScreens } from "react-native-screens";
 import { createNativeStackNavigator } from "react-native-screens/native-stack";
@@ -10,7 +9,6 @@ import { createNativeStackNavigator } from "react-native-screens/native-stack";
 import { Roboto_300Light, Roboto_400Regular, Roboto_500Medium, useFonts } from "@expo-google-fonts/roboto";
 import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
-import * as Updates from "expo-updates";
 import useAsyncEffect from "use-async-effect";
 import { Context, ContextProvider } from "./src/context";
 import useColors from "./src/hooks/useColors";
@@ -26,15 +24,6 @@ const Stack = createNativeStackNavigator();
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
-    useEffect(() => {
-        const onAppStateChange = async appState => {
-            if (appState === "active") {
-                await checkForUpdate();
-            }
-        };
-        AppState.addEventListener("change", onAppStateChange);
-        return () => AppState.removeEventListener("change", onAppStateChange);
-    }, []);
     return (
         <ContextProvider>
             <AppLoader />
@@ -104,33 +93,6 @@ const AppContainer = ({ twitterAuth }) => {
             </Stack.Navigator>
         </NavigationContainer>
     );
-};
-
-const checkForUpdate = async () => {
-    try {
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-            Updates.fetchUpdateAsync().then(() => {
-                Alert.alert(
-                    "New version available :)",
-                    "You can update to the new version now. Do you want to continue?",
-                    [
-                        {
-                            text: "No",
-                            style: "cancel"
-                        },
-                        {
-                            text: "Yes",
-                            style: "default",
-                            onPress: () => {
-                                Updates.reloadAsync();
-                            }
-                        }
-                    ]
-                );
-            });
-        }
-    } catch (e) {}
 };
 
 export default App;
