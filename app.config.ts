@@ -5,11 +5,13 @@ export default ({ config }) => {
         ...config,
         android: {
             ...config.android,
-            versionCode: Number(process.env.ANDROID_VERSION_CODE)
+            version: "1.0.0",
+            versionCode: 3
         },
         ios: {
             ...config.ios,
-            buildNumber: process.env.IOS_BUILD_NUMBER
+            version: "1.0.0",
+            buildNumber: "3"
         },
         extra: {
             twitterConsumerKey: process.env.TWITTER_CONSUMER_KEY,

@@ -7,7 +7,6 @@
       "ios",
       "android"
     ],
-    "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#291C64",
     "icon": "./assets/icon.png",

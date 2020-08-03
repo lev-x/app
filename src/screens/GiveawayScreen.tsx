@@ -229,7 +229,7 @@ const FAQ = () => (
             question={"Do I have to finish all 4 tasks?"}
             answer={"Yes. It's the moment when you finished all tasks that you're signed up."}
         />
-        <FAQCard question={"When is the deadline?"} answer={"7th August 00:00 UTC"} />
+        <FAQCard question={"When is it closed?"} answer={"7th August 00:00 UTC"} />
         <FAQCard question={"How can I get notified?"} answer={"A push notification will be sent to you on that day."} />
         <FAQCard
             question={"Is it okay to delete the app?"}
