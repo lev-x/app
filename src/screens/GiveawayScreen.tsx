@@ -254,13 +254,20 @@ const FAQCard = ({ question, answer }) => (
 
 const Social = () => {
     const onPressTwitter = useCallback(() => Linking.openURL("https://twitter.com/LevxApp"), []);
-    const onPressInstagram = useCallback(() => Linking.openURL("https://instagram.com/levx.app"), []);
     const onPressGithub = useCallback(() => Linking.openURL("https://github.com/lev-x"), []);
+    const onPressDiscord = useCallback(() => Linking.openURL("https://discord.gg/3QKsgf"), []);
     return (
         <FlexView style={{ marginTop: Spacing.large, marginBottom: Spacing.huge, justifyContent: "center" }}>
             <SocialIcon type="github" onPress={onPressGithub} />
-            <SocialIcon type="instagram" onPress={onPressInstagram} />
             <SocialIcon type="twitter" onPress={onPressTwitter} />
+            <Icon
+                type={"material-community"}
+                name={"discord"}
+                color={"#7289da"}
+                reverse={true}
+                raised={true}
+                onPress={onPressDiscord}
+            />
         </FlexView>
     );
 };
