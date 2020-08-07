@@ -9,17 +9,19 @@ export interface TextProps extends NativeTextProps {
     dark?: boolean;
     medium?: boolean;
     light?: boolean;
-    fontWeight?: "light" | "normal" | "bold";
+    fontWeight?: "thin" | "light" | "regular" | "medium" | "bold";
 }
 
 const Text: FC<TextProps> = props => {
     const { textDark, textMedium, textLight } = useColors();
-    const bold = props.h1 || props.h2 || props.h3 || props.h4;
+    const heading = props.h1 || props.h2 || props.h3 || props.h4;
     const fontFamily = {
+        thin: "Roboto_100Thin",
         light: "Roboto_300Light",
-        normal: "Roboto_400Regular",
-        bold: "Roboto_500Medium"
-    }[props.fontWeight === undefined ? (bold ? "bold" : "normal") : props.fontWeight];
+        regular: "Roboto_400Regular",
+        medium: "Roboto_500Medium",
+        bold: "Roboto_700Bold"
+    }[props.fontWeight === undefined ? (heading ? "bold" : "regular") : props.fontWeight];
     return (
         <NativeText
             {...props}

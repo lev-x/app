@@ -22,7 +22,7 @@ const MainScreen = ({ navigation }) => {
     return twitterAuth ? (
         <View>
             <StatusBar translucent={true} />
-            <Header navigation={navigation} />
+            <Header hideBackButton={true} />
             <Container>
                 <Content>
                     <AnimatedView slideUp={true} started={count === 0}>

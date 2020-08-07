@@ -14,7 +14,7 @@ const Button: FC<ButtonProps> = props => {
     const { primary, shadow, border } = useColors();
     const type = props.type || "solid";
     const height = props.size === "small" ? 48 : 64;
-    const fontSize = props.size === "small" ? 18 : 20;
+    const fontSize = props.size === "small" ? 16 : 20;
     return (
         <NativeButton
             {...props}

@@ -5,7 +5,8 @@ export const Colors = {
         primary: "#291C64",
         secondary: "#9BECEE",
         green: "#32CD32",
-        twitter: "#1da1f2"
+        twitter: "#1da1f2",
+        facebook: "#3B5998"
     },
     light: {
         background: "#ffffff",
