@@ -42,6 +42,7 @@
     "@types/react-native": "~0.62.13",
     "babel-preset-expo": "^8.2.3",
     "prettier": "^1.16.4",
+    "readline-sync": "^1.4.10",
     "tslint": "^6.1.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-microsoft-contrib": "^6.2.0",

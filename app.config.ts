@@ -1,16 +1,17 @@
 import "dotenv/config";
 
 export default ({ config }) => {
+    const { version, versionCode } = require("./version.json");
     return {
         ...config,
-        version: "1.0.0",
+        version,
         android: {
             ...config.android,
-            versionCode: 4
+            versionCode: Number(versionCode)
         },
         ios: {
             ...config.ios,
-            buildNumber: "4"
+            buildNumber: String(versionCode)
         },
         extra: {
             twitterConsumerKey: process.env.TWITTER_CONSUMER_KEY,
