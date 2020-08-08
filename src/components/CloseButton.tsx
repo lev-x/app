@@ -1,16 +1,18 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Icon } from "react-native-elements";
 
+import { StackActions, useNavigation } from "@react-navigation/native";
 import useColors from "../hooks/useColors";
 
 export interface CloseButtonProps {
-    onPress?: () => void;
     style?: StyleProp<ViewStyle>;
 }
 
 const CloseButton: FC<CloseButtonProps> = props => {
     const { disabled } = useColors();
+    const { dispatch } = useNavigation();
+    const onPress = useCallback(() => dispatch(StackActions.pop()), []);
     return (
         <Icon
             type={"ionicon"}
@@ -20,7 +22,7 @@ const CloseButton: FC<CloseButtonProps> = props => {
             reverse={true}
             raised={true}
             reverseColor={disabled}
-            onPress={props.onPress}
+            onPress={onPress}
             containerStyle={[{ elevation: 0, shadowOpacity: 0 }, props.style]}
         />
     );

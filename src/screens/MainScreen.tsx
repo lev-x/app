@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Animated, View } from "react-native";
+import { Animated, SafeAreaView, View } from "react-native";
 
 import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
@@ -29,8 +29,8 @@ const MainScreen = ({ navigation }) => {
     }, [twitterAuth]);
     useUpdateChecker();
     return twitterAuth && tweetId ? (
-        <View>
-            <StatusBar translucent={true} />
+        <SafeAreaView>
+            <StatusBar translucent={false} style={"dark"} backgroundColor={"white"} />
             <Header navigation={navigation} />
             <Container>
                 <Content>
@@ -41,7 +41,7 @@ const MainScreen = ({ navigation }) => {
                     )}
                 </Content>
             </Container>
-        </View>
+        </SafeAreaView>
     ) : (
         <LoadingScreen />
     );

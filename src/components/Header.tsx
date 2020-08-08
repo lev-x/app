@@ -3,12 +3,12 @@ import { Image, View } from "react-native";
 import { Icon } from "react-native-elements";
 import Menu, { MenuItem } from "react-native-material-menu";
 
-import Constants from "expo-constants";
 import { Spacing } from "../constants/dimension";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
+import CloseButton from "./CloseButton";
 
-const Header = ({ navigation }) => {
+const Header = ({ navigation, modal = false }) => {
     const { background, shadow } = useColors();
     return (
         <View
@@ -16,7 +16,6 @@ const Header = ({ navigation }) => {
                 height: 64,
                 justifyContent: "center",
                 alignItems: "center",
-                marginTop: Constants.statusBarHeight,
                 paddingHorizontal: Spacing.content,
                 elevation: Spacing.normal,
                 shadowColor: shadow,
@@ -26,8 +25,11 @@ const Header = ({ navigation }) => {
                 backgroundColor: background,
                 zIndex: 100
             }}>
-            <Image source={require("../../assets/logo-typography.png")} style={{ width: 102, height: 17.7 }} />
-            <OverflowButton navigation={navigation} />
+            {!modal && (
+                <Image source={require("../../assets/logo-typography.png")} style={{ width: 102, height: 17.7 }} />
+            )}
+            {modal && <CloseButton style={{ position: "absolute", left: 0, top: -4 }} />}
+            {!modal && <OverflowButton navigation={navigation} />}
         </View>
     );
 };

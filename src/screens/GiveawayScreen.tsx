@@ -21,7 +21,7 @@ import { Context } from "../context";
 import useColors from "../hooks/useColors";
 import useTwitter from "../hooks/useTwitter";
 
-const GiveawayScreen = ({ navigation }) => {
+const GiveawayScreen = () => {
     return (
         <View>
             <StatusBar translucent={true} barStyle={"light-content"} backgroundColor={"transparent"} />
@@ -40,7 +40,7 @@ const GiveawayScreen = ({ navigation }) => {
                     </Content>
                 </View>
             </Container>
-            <Header navigation={navigation} />
+            <Header />
         </View>
     );
 };
@@ -61,8 +61,7 @@ const Cover = () => (
     </View>
 );
 
-const Header = ({ navigation }) => {
-    const onPress = useCallback(() => navigation.goBack(), [navigation]);
+const Header = () => {
     return (
         <FlexView
             style={{
@@ -72,7 +71,7 @@ const Header = ({ navigation }) => {
                 justifyContent: "flex-start",
                 alignItems: "center"
             }}>
-            <CloseButton onPress={onPress} />
+            <CloseButton />
         </FlexView>
     );
 };
