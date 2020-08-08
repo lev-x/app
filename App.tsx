@@ -4,7 +4,7 @@ import "./global";
 import React, { useContext, useState } from "react";
 import { ThemeProvider } from "react-native-elements";
 import { enableScreens } from "react-native-screens";
-import { createNativeStackNavigator } from "react-native-screens/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationOptions } from "react-native-screens/native-stack";
 
 import { Roboto_300Light, Roboto_400Regular, Roboto_500Medium, useFonts } from "@expo-google-fonts/roboto";
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import AuthScreen from "./src/screens/AuthScreen";
 import GiveawayScreen from "./src/screens/GiveawayScreen";
 import LoadingScreen from "./src/screens/LoadingScreen";
 import MainScreen from "./src/screens/MainScreen";
+import WebViewScreen from "./src/screens/WebViewScreen";
 
 enableScreens();
 
@@ -74,6 +75,7 @@ const AppContainer = ({ twitterAuth }) => {
         border,
         notification: secondary
     };
+    const modal = { stackPresentation: "modal" } as NativeStackNavigationOptions;
     return (
         <NavigationContainer
             theme={{
@@ -83,13 +85,8 @@ const AppContainer = ({ twitterAuth }) => {
             <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={twitterAuth ? "Main" : "Auth"}>
                 <Stack.Screen name={"Auth"} component={AuthScreen} />
                 <Stack.Screen name={"Main"} component={MainScreen} />
-                <Stack.Screen
-                    name={"Giveaway"}
-                    component={GiveawayScreen}
-                    options={{
-                        stackPresentation: "modal"
-                    }}
-                />
+                <Stack.Screen name={"Giveaway"} component={GiveawayScreen} options={modal} />
+                <Stack.Screen name={"WebView"} component={WebViewScreen} options={modal} />
             </Stack.Navigator>
         </NavigationContainer>
     );
