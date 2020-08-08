@@ -19,7 +19,7 @@ const Lead: FC<LeadProps> = props => (
             </Text>
         )}
         {props.children && (
-            <Text medium={true} style={{ marginTop: Spacing.small }}>
+            <Text medium={true} fontWeight={"light"} style={{ marginTop: Spacing.small }}>
                 {props.children}
             </Text>
         )}

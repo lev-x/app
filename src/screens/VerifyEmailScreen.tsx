@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
 
 import { StatusBar } from "expo-status-bar";
@@ -8,7 +8,7 @@ import Content from "../components/Content";
 import Header from "../components/Header";
 import Lead from "../components/Lead";
 import Text from "../components/Text";
-import { Spacing } from "../constants/dimension";
+import { SCREEN_HEIGHT, Spacing } from "../constants/dimension";
 import useColors from "../hooks/useColors";
 
 const CELL_COUNT = 6;
@@ -16,24 +16,23 @@ const CELL_COUNT = 6;
 const VerifyEmailScreen = ({ route }) => {
     const [value, setValue] = useState("");
     const email = route.params.email;
+    const onNext = useCallback(() => {}, []);
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, minHeight: SCREEN_HEIGHT }}>
             <StatusBar translucent={true} />
             <Header type={"clear"} hideTitle={true} hideOverflowButton={true} />
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <Content style={{ flex: 1, justifyContent: "space-between" }}>
-                        <View>
-                            <Lead title={"Verify"} subtitle={"Your Email"}>
-                                We've sent a verification code to <Text fontWeight={"bold"}>{email}</Text>. Check your
-                                inbox.
-                            </Lead>
-                            <CodeInput value={value} setValue={setValue} />
-                        </View>
-                        {value.length >= CELL_COUNT && <NextButton />}
-                    </Content>
-                </TouchableWithoutFeedback>
-            </KeyboardAvoidingView>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <Content style={{ flex: 1, justifyContent: "space-between" }}>
+                    <View>
+                        <Lead title={"Verify"} subtitle={"Your Email"}>
+                            We've sent a verification code to <Text fontWeight={"bold"}>{email}</Text>. Check your
+                            inbox.
+                        </Lead>
+                        <CodeInput value={value} setValue={setValue} />
+                    </View>
+                    {value.length >= CELL_COUNT && <NextButton onPress={onNext} />}
+                </Content>
+            </TouchableWithoutFeedback>
         </View>
     );
 };
@@ -44,7 +43,7 @@ const CodeInput = ({ value, setValue }) => {
         value,
         setValue
     });
-    const renderCell = useCallback(p => <Cell kye={p.index} {...p} onLayout={getCellOnLayoutHandler(p.index)} />, []);
+    const renderCell = useCallback(p => <Cell key={p.index} {...p} onLayout={getCellOnLayoutHandler(p.index)} />, []);
     return (
         <CodeField
             ref={ref}
@@ -52,7 +51,7 @@ const CodeInput = ({ value, setValue }) => {
             value={value}
             onChangeText={setValue}
             cellCount={CELL_COUNT}
-            rootStyle={{ marginTop: Spacing.large }}
+            rootStyle={{ marginTop: Spacing.normal }}
             keyboardType="number-pad"
             textContentType="oneTimeCode"
             renderCell={renderCell}
@@ -80,8 +79,7 @@ const Cell = ({ symbol, isFocused, onLayout }) => {
     );
 };
 
-const NextButton = () => {
-    const onPress = useCallback(() => {}, []);
+const NextButton = ({ onPress }) => {
     return <Button title={"Verify Now"} onPress={onPress} />;
 };
 

@@ -31,7 +31,7 @@ const Buttons = ({ navigation }) => {
     const [error, setError] = useState("");
     const onSuccess = useCallback(() => navigation.push("CreateWallet"), []);
     return (
-        <View style={{ marginVertical: Spacing.normal }}>
+        <View style={{ marginTop: Spacing.normal, marginBottom: Spacing.small }}>
             <SignInWithGoogleButton onSuccess={onSuccess} onError={setError} />
             <Margin />
             <SignInWithAppleButton onSuccess={onSuccess} onError={setError} />
