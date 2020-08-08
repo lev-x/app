@@ -3,6 +3,7 @@ import { Image, View } from "react-native";
 import { Icon } from "react-native-elements";
 import Menu, { MenuItem } from "react-native-material-menu";
 
+import Constants from "expo-constants";
 import { Spacing } from "../constants/dimension";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
@@ -54,6 +55,7 @@ const OverflowButton = ({ navigation }) => {
             />
             <View style={{ position: "absolute", right: 0 }}>
                 <Menu ref={menuRef}>
+                    <MenuItem textStyle={{ fontSize: 18 }}>v{Constants.manifest.version}</MenuItem>
                     <SignOutItem navigation={navigation} />
                 </Menu>
             </View>
