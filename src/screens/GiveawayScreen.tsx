@@ -53,7 +53,7 @@ const Cover = () => (
                 <View style={{ marginTop: Spacing.huge, alignItems: "flex-end" }}>
                     <TitleText>$333 DAI{"\n"}Giveaway</TitleText>
                     <Text fontWeight={"light"} style={{ color: "white", marginTop: Spacing.tiny }}>
-                        Closed at 14th August 00:00 UTC
+                        Closed at 18th August 00:00 UTC
                     </Text>
                 </View>
             </Content>
@@ -129,7 +129,7 @@ const Rules = () => {
         await setPushToken(token);
         Alert.alert(
             "Push Notifications",
-            "Push notifications turned on! Stay tuned for the announcement on 14th August."
+            "Push notifications turned on! Stay tuned for the announcement on 18th August."
         );
         return true;
     }, [registerForPushNotifications, sendDMWithPushToken]);
@@ -228,7 +228,7 @@ const FAQ = () => (
             question={"Do I have to finish all 4 tasks?"}
             answer={"Yes. It's the moment when you finished all tasks that you're signed up."}
         />
-        <FAQCard question={"When is it closed?"} answer={"14th August 00:00 UTC"} />
+        <FAQCard question={"When is it closed?"} answer={"18th August 00:00 UTC"} />
         <FAQCard question={"How can I get notified?"} answer={"A push notification will be sent to you on that day."} />
         <FAQCard
             question={"Is it okay to delete the app?"}
