@@ -3,7 +3,6 @@ import { Animated, SafeAreaView, View } from "react-native";
 import { Overlay } from "react-native-elements";
 
 import { StatusBar } from "expo-status-bar";
-import useAsyncEffect from "use-async-effect";
 import Button from "../components/Button";
 import Container from "../components/Container";
 import Content from "../components/Content";
@@ -11,31 +10,22 @@ import FlexView from "../components/FlexView";
 import Header from "../components/Header";
 import Text from "../components/Text";
 import { SCREEN_WIDTH, Spacing } from "../constants/dimension";
-import { WEBSITE_URL } from "../constants/web";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
 import usePushNotifications from "../hooks/usePushNotifications";
-import useTwitter from "../hooks/useTwitter";
 import useUpdateChecker from "../hooks/useUpdateChecker";
 import LoadingScreen from "./LoadingScreen";
 
 const MainScreen = ({ navigation }) => {
     const { twitterAuth } = useContext(Context);
-    const { getGiveawayTweetId } = useTwitter();
-    const [tweetId, setTweetId] = useState("");
-    useAsyncEffect(async () => {
-        if (twitterAuth) {
-            setTweetId(await getGiveawayTweetId());
-        }
-    }, [twitterAuth]);
     useUpdateChecker();
-    return twitterAuth && tweetId ? (
+    return twitterAuth ? (
         <SafeAreaView>
             <StatusBar translucent={false} style={"dark"} backgroundColor={"white"} />
             <Header navigation={navigation} />
             <Container>
                 <Content>
-                    <GiveawayResult navigation={navigation} twitterAuth={twitterAuth} url={WEBSITE_URL + tweetId} />
+                    <GiveawayResult navigation={navigation} twitterAuth={twitterAuth} />
                 </Content>
             </Container>
         </SafeAreaView>
@@ -44,7 +34,7 @@ const MainScreen = ({ navigation }) => {
     );
 };
 
-const GiveawayResult = ({ navigation, twitterAuth, url }) => {
+const GiveawayResult = ({ navigation, twitterAuth }) => {
     const { count } = useIncrementer();
     return (
         <>
@@ -58,7 +48,7 @@ const GiveawayResult = ({ navigation, twitterAuth, url }) => {
                 <TitleText>Also, next giveaway is coming in 2 WEEKS.</TitleText>
             </AnimatedView>
             <AnimatedView slideLeft={true} started={count === 3} style={{ marginTop: Spacing.large }}>
-                <CheckButton navigation={navigation} url={url} />
+                <CheckButton navigation={navigation} />
             </AnimatedView>
             <AnimatedView slideLeft={true} started={count === 4} style={{ marginTop: Spacing.normal }}>
                 <NextGiveawayButton />
@@ -67,10 +57,10 @@ const GiveawayResult = ({ navigation, twitterAuth, url }) => {
     );
 };
 
-const CheckButton = ({ navigation, url }) => {
+const CheckButton = ({ navigation }) => {
     const onPress = useCallback(() => {
-        navigation.navigate("WebView", { url });
-    }, [url]);
+        navigation.navigate("WebView", { url: "https://levx.app/winners" });
+    }, []);
     return <Button title={"Check The Winners"} onPress={onPress} />;
 };
 
