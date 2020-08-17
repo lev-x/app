@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Animated, SafeAreaView, View } from "react-native";
+import { Overlay } from "react-native-elements";
 
-import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import useAsyncEffect from "use-async-effect";
 import Button from "../components/Button";
@@ -14,6 +14,7 @@ import { SCREEN_WIDTH, Spacing } from "../constants/dimension";
 import { WEBSITE_URL } from "../constants/web";
 import { Context } from "../context";
 import useColors from "../hooks/useColors";
+import usePushNotifications from "../hooks/usePushNotifications";
 import useTwitter from "../hooks/useTwitter";
 import useUpdateChecker from "../hooks/useUpdateChecker";
 import LoadingScreen from "./LoadingScreen";
@@ -34,11 +35,7 @@ const MainScreen = ({ navigation }) => {
             <Header navigation={navigation} />
             <Container>
                 <Content>
-                    {tweetId.startsWith("/") ? (
-                        <GiveawayResult navigation={navigation} twitterAuth={twitterAuth} url={WEBSITE_URL + tweetId} />
-                    ) : (
-                        <EnterGiveaway navigation={navigation} twitterAuth={twitterAuth} />
-                    )}
+                    <GiveawayResult navigation={navigation} twitterAuth={twitterAuth} url={WEBSITE_URL + tweetId} />
                 </Content>
             </Container>
         </SafeAreaView>
@@ -55,13 +52,16 @@ const GiveawayResult = ({ navigation, twitterAuth, url }) => {
                 <HelloText twitterAuth={twitterAuth} />
             </AnimatedView>
             <AnimatedView slideUp={true} started={count === 1} style={{ marginTop: Spacing.normal }}>
-                <TitleText>$333 DAI giveaway campaign has ended.</TitleText>
+                <TitleText>$333 DAI GIVEAWAY has finished. Check if you are on the winners list.</TitleText>
             </AnimatedView>
             <AnimatedView slideUp={true} started={count === 2} style={{ marginTop: Spacing.normal }}>
-                <TitleText>You can check if you are on the winners list!</TitleText>
+                <TitleText>Also, next giveaway is coming in 2 WEEKS.</TitleText>
             </AnimatedView>
-            <AnimatedView slideLeft={true} started={count === 3} style={{ marginTop: Spacing.huge }}>
+            <AnimatedView slideLeft={true} started={count === 3} style={{ marginTop: Spacing.large }}>
                 <CheckButton navigation={navigation} url={url} />
+            </AnimatedView>
+            <AnimatedView slideLeft={true} started={count === 4} style={{ marginTop: Spacing.normal }}>
+                <NextGiveawayButton />
             </AnimatedView>
         </>
     );
@@ -74,26 +74,69 @@ const CheckButton = ({ navigation, url }) => {
     return <Button title={"Check The Winners"} onPress={onPress} />;
 };
 
-const EnterGiveaway = ({ navigation, twitterAuth }) => {
-    const { count } = useIncrementer();
+const NextGiveawayButton = () => {
+    const [visible, setVisible] = useState(false);
+    const toggleOverlay = useCallback(() => {
+        setVisible(!visible);
+    }, [visible]);
     return (
         <>
-            <AnimatedView slideUp={true} started={count === 0}>
-                <HelloText twitterAuth={twitterAuth} />
-            </AnimatedView>
-            <AnimatedView slideUp={true} started={count === 1} style={{ marginTop: Spacing.normal }}>
-                <TitleText>We have a DAI giveaway campaign that you can enter right away.</TitleText>
-            </AnimatedView>
-            <AnimatedView slideUp={true} started={count === 2} style={{ marginTop: Spacing.normal }}>
-                <TitleText>Do you want to learn more about it?</TitleText>
-            </AnimatedView>
-            <AnimatedView slideLeft={true} started={count === 3} style={{ marginTop: Spacing.huge }}>
-                <NextButton navigation={navigation} />
-            </AnimatedView>
-            <AnimatedView slideLeft={true} started={count === 4} style={{ marginTop: Spacing.normal }}>
-                <MoreButton navigation={navigation} />
-            </AnimatedView>
+            <Button
+                type={"clear"}
+                size={"small"}
+                title={"GET NOTIFIED OF GIVEAWAYS"}
+                onPress={toggleOverlay}
+                titleStyle={{ textDecorationLine: "underline" }}
+            />
+            <TurnOnOverlay visible={visible} toggleOverlay={toggleOverlay} />
         </>
+    );
+};
+
+const TurnOnOverlay = ({ visible, toggleOverlay }) => {
+    const { pushToken } = usePushNotifications();
+    return (
+        <Overlay
+            overlayStyle={{ width: SCREEN_WIDTH * 0.9, padding: 0 }}
+            isVisible={visible}
+            statusBarTranslucent={true}
+            onBackdropPress={toggleOverlay}>
+            <Content contentPadding={"small"}>
+                <Text style={{ fontSize: 22 }} fontWeight={"bold"}>
+                    Next Giveaways
+                </Text>
+                <Text style={{ marginTop: Spacing.small }}>
+                    The next giveaway is on 1st September and we'll send you notifications as soon as it opens.
+                </Text>
+                {pushToken ? (
+                    <View style={{ marginTop: Spacing.small, alignItems: "flex-end" }}>
+                        <Text fontWeight={"bold"}>You've already turned on push notifications.</Text>
+                        <Button type={"clear"} size={"small"} title={"OK"} onPress={toggleOverlay} />
+                    </View>
+                ) : (
+                    <TurnOnView onClose={toggleOverlay} />
+                )}
+            </Content>
+        </Overlay>
+    );
+};
+
+const TurnOnView = ({ onClose }) => {
+    const { turnOn } = usePushNotifications();
+    return (
+        <View>
+            <Text style={{ marginTop: Spacing.small }}>Do you want to turn on push notifications?</Text>
+            <FlexView style={{ marginTop: Spacing.small }}>
+                <Button
+                    type={"clear"}
+                    size={"small"}
+                    title={"No, thanks"}
+                    containerStyle={{ flex: 1 }}
+                    onPress={onClose}
+                />
+                <Button size={"small"} title={"Turn On Now"} containerStyle={{ flex: 1 }} onPress={turnOn} />
+            </FlexView>
+        </View>
     );
 };
 
@@ -148,28 +191,6 @@ const Highlighter = () => {
                 bottom: 8,
                 zIndex: 0
             }}
-        />
-    );
-};
-
-const NextButton = ({ navigation }) => {
-    const onPress = useCallback(() => {
-        navigation.navigate("Giveaway");
-    }, [navigation]);
-    return <Button title={"Yes. I'd like that."} onPress={onPress} />;
-};
-
-const MoreButton = ({ navigation }) => {
-    const onPress = useCallback(() => {
-        Linking.openURL(WEBSITE_URL);
-    }, [navigation]);
-    return (
-        <Button
-            type={"clear"}
-            size={"small"}
-            title={"What is LevX?"}
-            titleStyle={{ textDecorationLine: "underline" }}
-            onPress={onPress}
         />
     );
 };

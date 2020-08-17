@@ -1,12 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Alert, Image, InteractionManager, Platform, StatusBar, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Alert, Image, InteractionManager, StatusBar, View } from "react-native";
 import { Card, Icon, SocialIcon } from "react-native-elements";
 
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
-import { AndroidImportance } from "expo-notifications";
-import * as Notifications from "expo-notifications";
-import * as Permissions from "expo-permissions";
 import Button from "../components/Button";
 import CloseButton from "../components/CloseButton";
 import Container from "../components/Container";
@@ -16,9 +13,8 @@ import Footer from "../components/Footer";
 import TagModal from "../components/TagModal";
 import Text from "../components/Text";
 import { Spacing } from "../constants/dimension";
-import { LEVX_TWITTER_ID } from "../constants/social";
-import { Context } from "../context";
 import useColors from "../hooks/useColors";
+import usePushNotifications from "../hooks/usePushNotifications";
 import useTwitter from "../hooks/useTwitter";
 
 const GiveawayScreen = () => {
@@ -121,18 +117,8 @@ const Prize = ({ color, rank, amount }) => (
 );
 
 const Rules = () => {
-    const { twitterAuth, pushToken, setPushToken } = useContext(Context);
-    const { twitter, follow, isFollowing, retweet, hasRetweeted } = useTwitter();
-    const turnOnPush = useCallback(async () => {
-        const token = await registerForPushNotifications();
-        await sendDMWithPushToken(twitter, twitterAuth, token.data);
-        await setPushToken(token);
-        Alert.alert(
-            "Push Notifications",
-            "Push notifications turned on! Stay tuned for the announcement on 18th August."
-        );
-        return true;
-    }, [registerForPushNotifications, sendDMWithPushToken]);
+    const { pushToken, turnOn } = usePushNotifications();
+    const { follow, isFollowing, retweet, hasRetweeted } = useTwitter();
     const isPushTurnedOn = useCallback(() => !!pushToken, [pushToken]);
     return (
         <View style={{ marginTop: Spacing.normal }}>
@@ -143,7 +129,7 @@ const Rules = () => {
             <Rule title={"Follow @LevxApp"} write={follow} read={isFollowing} />
             <Rule title={"Retweet the giveaway"} write={retweet} read={hasRetweeted} />
             <TagRule />
-            <Rule title={"Turn on push notifications"} write={turnOnPush} read={isPushTurnedOn} />
+            <Rule title={"Turn on push notifications"} write={turnOn} read={isPushTurnedOn} />
         </View>
     );
 };
@@ -284,43 +270,6 @@ const CaptionText = props => (
 const Border = () => {
     const { border } = useColors();
     return <View style={{ height: 0.5, width: "100%", backgroundColor: border }} />;
-};
-
-const registerForPushNotifications = async () => {
-    if (Constants.isDevice) {
-        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-        let finalStatus = existingStatus;
-        if (existingStatus !== "granted") {
-            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-            finalStatus = status;
-        }
-        if (finalStatus !== "granted") {
-            throw new Error("Failed to get push token for push notification!");
-        }
-        const token = await Notifications.getExpoPushTokenAsync();
-        if (Platform.OS === "android") {
-            await Notifications.setNotificationChannelAsync("default", {
-                name: "default",
-                importance: AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: "#9BECEE"
-            });
-        }
-        return token;
-    } else {
-        throw new Error("Must use physical device for Push Notifications");
-    }
-};
-const sendDMWithPushToken = async (twitter, twitterAuth, token) => {
-    await twitter.post("direct_messages/events/new", {
-        event: {
-            type: "message_create",
-            message_create: {
-                target: { recipient_id: LEVX_TWITTER_ID },
-                message_data: { text: "@" + twitterAuth.screen_name + "  \t" + token }
-            }
-        }
-    });
 };
 
 export default GiveawayScreen;

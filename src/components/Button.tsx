@@ -15,6 +15,7 @@ const Button: FC<ButtonProps> = props => {
     const type = props.type || "solid";
     const height = props.size === "small" ? 48 : 64;
     const fontSize = props.size === "small" ? 18 : 20;
+    const fontFamily = "Roboto_400Regular";
     return (
         <NativeButton
             {...props}
@@ -28,7 +29,7 @@ const Button: FC<ButtonProps> = props => {
                 },
                 props.buttonStyle
             ]}
-            titleStyle={[{ fontSize }, props.titleStyle]}
+            titleStyle={[{ fontSize, fontFamily }, props.titleStyle]}
             containerStyle={[
                 props.type === "clear"
                     ? {}
